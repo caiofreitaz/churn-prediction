@@ -1,0 +1,154 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "churn-predictor"
+version = "0.1.0"
+description = "Neural network for telecom customer churn prediction with end-to-end ML pipeline"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { text = "MIT" }
+authors = [
+    { name = "Caio_Lima", email = "caio_lima.freitas@hotmail.com" }
+]
+keywords = ["machine-learning", "churn", "pytorch", "fastapi", "mlflow"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # Core ML
+    "torch>=2.1.0,<3.0.0",
+    "scikit-learn>=1.3.0,<2.0.0",
+    "numpy>=1.24.0,<2.0.0",
+    "pandas>=2.0.0,<3.0.0",
+
+    # Experiment tracking
+    "mlflow>=2.9.0,<3.0.0",
+
+    # API
+    "fastapi>=0.109.0,<1.0.0",
+    "uvicorn[standard]>=0.27.0,<1.0.0",
+    "pydantic>=2.5.0,<3.0.0",
+    "pydantic-settings>=2.1.0,<3.0.0",
+
+    # Data validation
+    "pandera>=0.17.0,<1.0.0",
+
+    # Utilities
+    "python-dotenv>=1.0.0",
+    "structlog>=24.1.0",
+    "joblib>=1.3.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0,<9.0.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.23.0",
+    "httpx>=0.26.0",  # For FastAPI TestClient
+    "ruff>=0.2.0",
+    "ipykernel>=6.29.0",
+    "jupyter>=1.0.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "plotly>=5.18.0",
+]
+
+[project.scripts]
+churn-train = "churn_predictor.training.train:main"
+churn-serve = "churn_predictor.api.main:run"
+
+[project.urls]
+Repository = "https://github.com/your-org/churn-prediction"
+Documentation = "https://github.com/your-org/churn-prediction/tree/main/docs"
+
+# ----------------------------------------------------------------------------
+# Setuptools
+# ----------------------------------------------------------------------------
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+churn_predictor = ["py.typed", "*.yaml", "*.yml"]
+
+# ----------------------------------------------------------------------------
+# Ruff (linter + formatter)
+# ----------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+extend-exclude = ["notebooks", "mlruns", "data"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "SIM", # flake8-simplify
+    "RUF", # ruff-specific
+]
+ignore = [
+    "E501",   # Line too long (handled by formatter)
+    "N803",   # Argument name should be lowercase (X, y are conventions)
+    "N806",   # Variable in function should be lowercase (X_train, y_train)
+    "B008",   # Do not perform function calls in argument defaults (FastAPI uses Depends())
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]  # Allow assert in tests
+"notebooks/*" = ["E402", "F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ----------------------------------------------------------------------------
+# Pytest
+# ----------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=churn_predictor",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "smoke: marks tests as smoke tests",
+]
+
+[tool.coverage.run]
+source = ["src/churn_predictor"]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
