@@ -64,11 +64,14 @@ class TestHealthEndpoint:
         """Quando load_model_bundle falha, /health retorna unhealthy."""
         from churn_predictor.api import main as api_main
 
-        with patch.object(
-            api_main,
-            "load_model_bundle",
-            side_effect=FileNotFoundError("no model"),
-        ), TestClient(api_main.app) as client:
+        with (
+            patch.object(
+                api_main,
+                "load_model_bundle",
+                side_effect=FileNotFoundError("no model"),
+            ),
+            TestClient(api_main.app) as client,
+        ):
             response = client.get("/health")
 
         assert response.status_code == 200
@@ -106,9 +109,7 @@ class TestPredictEndpoint:
         response = client.post("/predict", json=sample_customer)
         assert response.status_code == 422
 
-    def test_predict_returns_request_id_header(
-        self, client: TestClient, sample_customer: dict
-    ):
+    def test_predict_returns_request_id_header(self, client: TestClient, sample_customer: dict):
         response = client.post("/predict", json=sample_customer)
         assert "X-Request-ID" in response.headers
         assert "X-Process-Time-Ms" in response.headers
@@ -117,11 +118,14 @@ class TestPredictEndpoint:
         """Quando o modelo falha ao carregar, /predict retorna 503."""
         from churn_predictor.api import main as api_main
 
-        with patch.object(
-            api_main,
-            "load_model_bundle",
-            side_effect=FileNotFoundError("no model"),
-        ), TestClient(api_main.app) as client:
+        with (
+            patch.object(
+                api_main,
+                "load_model_bundle",
+                side_effect=FileNotFoundError("no model"),
+            ),
+            TestClient(api_main.app) as client,
+        ):
             response = client.post("/predict", json=sample_customer)
         assert response.status_code == 503
 

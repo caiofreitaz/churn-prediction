@@ -217,7 +217,13 @@ def train_mlp_pipeline(
 
         # Log curvas de treinamento
         for epoch, (tl, vl, prc, roc) in enumerate(
-            zip(history.train_loss, history.val_loss, history.val_pr_auc, history.val_roc_auc, strict=True),
+            zip(
+                history.train_loss,
+                history.val_loss,
+                history.val_pr_auc,
+                history.val_roc_auc,
+                strict=True,
+            ),
             start=1,
         ):
             mlflow.log_metric("train_loss", tl, step=epoch)
@@ -358,17 +364,23 @@ def main() -> None:
 
     # 3. Treina baselines
     baseline_results = train_baselines(
-        X_train_arr, y_train_arr,
-        X_val_arr, y_val_arr,
-        X_test_arr, y_test_arr,
+        X_train_arr,
+        y_train_arr,
+        X_val_arr,
+        y_val_arr,
+        X_test_arr,
+        y_test_arr,
         metadata,
     )
 
     # 4. Treina MLP
     mlp_results, mlp_model = train_mlp_pipeline(
-        X_train_arr, y_train_arr,
-        X_val_arr, y_val_arr,
-        X_test_arr, y_test_arr,
+        X_train_arr,
+        y_train_arr,
+        X_val_arr,
+        y_val_arr,
+        X_test_arr,
+        y_test_arr,
         metadata,
     )
 

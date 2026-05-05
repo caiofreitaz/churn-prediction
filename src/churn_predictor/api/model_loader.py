@@ -74,8 +74,7 @@ def load_model_bundle(
         )
     if not model_path.exists():
         raise FileNotFoundError(
-            f"Modelo não encontrado em {model_path}. "
-            f"Treine o modelo primeiro com `make train`."
+            f"Modelo não encontrado em {model_path}. Treine o modelo primeiro com `make train`."
         )
 
     # Pipeline sklearn
