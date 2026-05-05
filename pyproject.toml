@@ -6,7 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "churn-predictor"
 version = "0.1.0"
 description = "Neural network for telecom customer churn prediction with end-to-end ML pipeline"
-readme = "README.md"
 requires-python = ">=3.10,<3.13"
 license = { text = "MIT" }
 authors = [
